@@ -3,7 +3,8 @@ import java.io.Serializable;
 
 public class Coche implements Serializable{
 	
-
+	//Declaración de atributos: id, matricula, marca, modelo y color
+	//Generamos id único que identifica la clase cuando la serializamos
 	private static final long serialVersionUID = -3941671490311809688L;
 	
 	private int id;
@@ -12,7 +13,7 @@ public class Coche implements Serializable{
 	private String modelo;
 	private String color;
 	
-	
+	//Constructor
 	public Coche(String matricula, String marca, String modelo, String color) {
 		super();
 		this.matricula = matricula;
@@ -21,7 +22,7 @@ public class Coche implements Serializable{
 		this.color = color;
 	}
 
-
+	//Getters y Setters
 	public int getId() {
 		return id;
 	}
@@ -71,7 +72,7 @@ public class Coche implements Serializable{
 		this.color = color;
 	}
 
-
+	//ToString
 	@Override
 	public String toString() {
 		return "Coches [id=" + id + ", matricula=" + matricula + ", marca=" + marca + ", modelo=" + modelo + ", color="
