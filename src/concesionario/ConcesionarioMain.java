@@ -4,14 +4,20 @@ import java.util.*;
 import java.io.*;
 
 public class ConcesionarioMain {
+	
+	//Se declaran las constantes de los nombres de los ficheros para facilitar las llamadas
 	public static final String nombreFichero = "coches.dat";
 	public static final String csv = "concesionario.csv";
 	
 	public static void main(String[] args) {
 		
+		//Se instancia un nuevo concesionario y un nuevo fichero
 		int id;
 		Concesionario concesionario = new Concesionario();
 		File fn = new File(nombreFichero);
+		
+		//Si no existe se creará el archivo con 3 vehículos de ejemplo que también serán almacenados en el
+		//Array concesionario. El documento guardará el objeto concesionario.
 		if (!fn.exists()) {
 			try {
 				fn.createNewFile();
@@ -34,13 +40,16 @@ public class ConcesionarioMain {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} 														
+		//Si existe, la variable concesionario alojará los datos del archivo "coches.dat" y a su vez,
+		//chequeará el último id del documento para que continúe asignando a partir de 
+		//ese valor y así evitar repeticiones.
 		}else {
 			try (FileInputStream fis = new FileInputStream(fn);
 					 ObjectInputStream ois = new ObjectInputStream(fis);) {
 				concesionario = (Concesionario)ois.readObject();
 				int ultimaPosicion = concesionario.getConcesionario().size()-1;
 				Coche c = concesionario.getConcesionario().get(ultimaPosicion);
-				concesionario.setId(c.getId());
+				Concesionario.setId(c.getId());
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block4
 				e.printStackTrace();
@@ -54,8 +63,8 @@ public class ConcesionarioMain {
 			
 		}
 		
-		try (Scanner scan = new Scanner(System.in)){
-			String texto = "";
+		//Se inicia el menú que se mostrará por pantalla
+		try (Scanner scan = new Scanner(System.in)){			
 			boolean continuar = true;
 			
 			while (continuar) {
@@ -68,6 +77,8 @@ public class ConcesionarioMain {
 				System.out.println("0. Salir.");
 				int instruction = Integer.parseInt(scan.nextLine());
 				switch(instruction) {
+				//Opción 1: añadir
+				//Se piden los datos necesarios, se guarda en el array y este se utiliza para sobrescribirlo en el archivo.
 				case 1:
 					System.out.println("Introduzca matricula:");
 					String matricula = scan.nextLine();
@@ -89,11 +100,18 @@ public class ConcesionarioMain {
 						e.printStackTrace();
 					} 
 										
-					break;					
+					break;
+				//Opción 2: Borrar
+				//Se pide un ID y gracias al método borrar de la clase concesionario se ejecuta, posteriormente se
+				//guarda el concesionario actualizado en el archivo.
 				case 2:
 					System.out.println("Introduzca ID para borrar:");
 					id = Integer.parseInt(scan.nextLine());
+					try {
 					concesionario.borrar(id);
+					}catch (ConcurrentModificationException e) {
+						System.out.println("*");
+					}
 					try(FileOutputStream fos = new FileOutputStream(fn);
 							ObjectOutputStream oos = new ObjectOutputStream(fos)){
 						oos.writeObject(concesionario);
@@ -102,7 +120,10 @@ public class ConcesionarioMain {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} 
-					break;					
+					break;
+				//Opción 3: Consultar
+				//Se carga el archivo y se almacena en el array por evitar discrepancias y se ejecuta el método buscar
+				//de la clase concesionario.
 				case 3:
 					System.out.println("Introduzca ID para consultar:");
 					id = Integer.parseInt(scan.nextLine());
@@ -126,6 +147,9 @@ public class ConcesionarioMain {
 					System.out.println("El coche que busca es: ");
 					System.out.println(concesionario.buscarID(id));		
 					break;
+				//Opción 4: Listar
+				//Igual que la anterior, se lee y almacena el documento en la variable concesionario para sincronizarlo
+				//y con un bucle for se van mostrando todos los vehículos almacenados.
 				case 4:					
 					System.out.println("Listando...");
 					try (FileInputStream fis = new FileInputStream(fn);
@@ -150,6 +174,11 @@ public class ConcesionarioMain {
 						e.printStackTrace();
 					} 
 					break;
+				//Opción 5: CSV
+				//Para la creación del CSV se optó por realizar un bucle de escritura con la clase Buffered Writer
+				//ya que los CSV son archivos de datos simples, solo era necesario guardar por línea los valores de
+				//cada coche separados por ";".
+				//Además, se agregó una cabecera al documento.
 				case 5:	
 					System.out.println("Exportando CSV...");
 					
